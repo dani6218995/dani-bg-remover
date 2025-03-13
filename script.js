@@ -15,8 +15,8 @@ let loading = document.querySelector("#loading");
 let downloadBtn = document.querySelector("#download");
 let resetBtn = document.querySelector("#reset");
 
-// Flask Backend API URL (Update with your Vercel URL after deployment)
-const API_URL = "https://your-vercel-app.vercel.app/remove-bg"; // Change this after deploying
+// ✅ **Updated Flask Backend API URL (Change to your actual Vercel deployed API)**
+const API_URL = "https://danish-bg-remover.vercel.app/remove-bg"; // Update this URL
 
 // Handle Image Selection
 innerImage.addEventListener("click", () => {
@@ -38,7 +38,7 @@ fileInput.addEventListener("change", () => {
     reader.readAsDataURL(image);
 });
 
-// Upload Image & Remove Background
+// ✅ **Upload Image & Remove Background**
 uploadBtn.addEventListener("click", async () => {
     if (!image) {
         alert("Please select an image first!");
@@ -54,6 +54,9 @@ uploadBtn.addEventListener("click", async () => {
         let response = await fetch(API_URL, {
             method: "POST",
             body: formData,
+            headers: {
+                "Accept": "image/png"
+            }
         });
 
         if (!response.ok) throw new Error("Failed to process image");
@@ -62,7 +65,7 @@ uploadBtn.addEventListener("click", async () => {
         url = URL.createObjectURL(blob);
         GeneratedImg.src = url;
 
-        // Show result section
+        // ✅ Show result section
         loading.style.display = "none";
         style2.style.display = "none";
         resultPage.style.display = "flex";
@@ -73,7 +76,7 @@ uploadBtn.addEventListener("click", async () => {
     }
 });
 
-// Download Processed Image
+// ✅ **Download Processed Image**
 downloadBtn.addEventListener("click", () => {
     if (!url) return;
     let a = document.createElement("a");
@@ -82,11 +85,7 @@ downloadBtn.addEventListener("click", () => {
     a.click();
 });
 
-// Reset Everything
+// ✅ **Reset Everything**
 resetBtn.addEventListener("click", () => {
     window.location.reload();
 });
-fetch("https://your-flask-app.vercel.app/remove-bg", {  
-    method: "POST",
-    body: formData
-})
