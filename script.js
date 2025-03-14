@@ -1,7 +1,5 @@
 let fileInput = document.getElementById("filepicker");
 let innerImage = document.querySelector(".inner-upload-image");
-let image = null;
-let url = null;
 let InputImg = document.getElementById("input-image");
 let icon = document.querySelector("#icon");
 let span = document.querySelector("span");
@@ -15,13 +13,16 @@ let loading = document.querySelector("#loading");
 let downloadBtn = document.querySelector("#download");
 let resetBtn = document.querySelector("#reset");
 
-// ✅ **Updated Flask Backend API URL (Change to your actual Vercel deployed API)**
-const API_URL = "https://danish-bg-remover.vercel.app/remove-bg"; // Update this URL
+let image = null;
+let url = null;
 
-// Handle Image Selection
-innerImage.addEventListener("click", () => {
-    fileInput.click();
-});
+// ✅ **Set API URL: Local or Vercel Deployment**
+const LOCAL_API_URL = "http://127.0.0.1:5000/remove-bg";  // 🔹 Local Flask Server
+const VERCEL_API_URL = "https://danish-bg-remover.vercel.app/remove-bg"; // 🔹 Deployed Flask on Vercel
+const API_URL = LOCAL_API_URL;  // Change this if needed
+
+// ✅ **Handle Image Selection**
+innerImage.addEventListener("click", () => fileInput.click());
 
 fileInput.addEventListener("change", () => {
     image = fileInput.files[0];
@@ -41,25 +42,25 @@ fileInput.addEventListener("change", () => {
 // ✅ **Upload Image & Remove Background**
 uploadBtn.addEventListener("click", async () => {
     if (!image) {
-        alert("Please select an image first!");
+        alert("⚠️ Please select an image first!");
         return;
     }
 
     let formData = new FormData();
     formData.append("image", image);
 
-    loading.style.display = "block";
+    loading.style.display = "block";  // Show loading animation
 
     try {
         let response = await fetch(API_URL, {
             method: "POST",
             body: formData,
-            headers: {
-                "Accept": "image/png"
-            }
+            headers: { "Accept": "image/png" }
         });
 
-        if (!response.ok) throw new Error("Failed to process image");
+        if (!response.ok) {
+            throw new Error(`Server Error: ${response.status} (${response.statusText})`);
+        }
 
         let blob = await response.blob();
         url = URL.createObjectURL(blob);
@@ -70,8 +71,8 @@ uploadBtn.addEventListener("click", async () => {
         style2.style.display = "none";
         resultPage.style.display = "flex";
     } catch (error) {
-        console.error(error);
-        alert("Error processing image");
+        console.error("❌ Error:", error);
+        alert(`❌ Error processing image: ${error.message}`);
         loading.style.display = "none";
     }
 });
@@ -86,6 +87,4 @@ downloadBtn.addEventListener("click", () => {
 });
 
 // ✅ **Reset Everything**
-resetBtn.addEventListener("click", () => {
-    window.location.reload();
-});
+resetBtn.addEventListener("click", () => window.location.reload());
